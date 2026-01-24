@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play, ChevronDown, Mail } from 'lucide-react'
 
 /**
  * NeuralFlow Landing Page
@@ -15,6 +15,9 @@ export default function Home() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [demoStep, setDemoStep] = useState(0)
   const [autoPlayDemo, setAutoPlayDemo] = useState(false)
+  const [expandedFaq, setExpandedFaq] = useState(0)
+  const [email, setEmail] = useState('')
+  const [videoPlaying, setVideoPlaying] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -144,6 +147,41 @@ export default function Home() {
       highlighted: false,
     },
   ]
+
+  const faqs = [
+    {
+      question: 'How much does NeuralFlow cost?',
+      answer: 'NeuralFlow offers flexible pricing starting at $29/month for individuals. Our Professional plan ($99/month) is designed for growing teams with advanced features. Enterprise customers can contact our sales team for custom pricing based on their specific needs.',
+    },
+    {
+      question: 'What integrations are supported?',
+      answer: 'We support 100+ integrations including Slack, Salesforce, HubSpot, Stripe, Google Sheets, Zapier, and many more. Our integration marketplace is constantly growing, and you can request custom integrations for your specific tools.',
+    },
+    {
+      question: 'Is my data secure?',
+      answer: 'Yes, security is our top priority. We are SOC 2 Type II compliant, use end-to-end encryption, and comply with GDPR, CCPA, and other major data protection regulations. All data is encrypted both in transit and at rest.',
+    },
+    {
+      question: 'Can I use NeuralFlow without coding?',
+      answer: 'Absolutely! NeuralFlow is designed as a no-code platform. Our visual workflow builder allows you to create complex automations by dragging and dropping components. No programming knowledge required.',
+    },
+    {
+      question: 'What kind of support do you offer?',
+      answer: 'We offer email support for all plans, with priority support available on Professional and Enterprise plans. Enterprise customers receive 24/7 phone support and a dedicated account manager.',
+    },
+    {
+      question: 'Can I try NeuralFlow for free?',
+      answer: 'Yes! All plans include a 14-day free trial with full access to features. No credit card is required to start. You can explore the platform and build workflows risk-free.',
+    },
+  ]
+
+  const handleEmailSignup = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (email) {
+      alert(`Thanks for signing up! We'll send updates to ${email}`)
+      setEmail('')
+    }
+  }
 
   return (
     <div className="bg-black text-white selection:bg-cyan-500/30 overflow-hidden">
@@ -325,6 +363,78 @@ export default function Home() {
               SOC 2 Type II compliant and end-to-end encrypted.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS - VIDEO SECTION */}
+      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+        </div>
+
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
+          How it <span className="text-cyan-400">works</span>
+        </h2>
+        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
+          See NeuralFlow in action with our comprehensive demo video
+        </p>
+
+        {/* Video Container */}
+        <div className="relative rounded-2xl overflow-hidden border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 group">
+          {/* Video Thumbnail/Background */}
+          <div 
+            className="relative w-full aspect-video bg-gradient-to-br from-gray-900/80 to-gray-900/40 flex items-center justify-center cursor-pointer overflow-hidden"
+            onClick={() => setVideoPlaying(true)}
+          >
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 opacity-30">
+              <div 
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: 'url(/images/feature-accent.png)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+            </div>
+
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+
+            {/* Play Button */}
+            <div className="relative z-10 flex flex-col items-center gap-4">
+              <div className="w-24 h-24 rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center group-hover:bg-cyan-500/30 group-hover:scale-110 transition-all duration-300">
+                <Play size={48} className="text-cyan-400 ml-1" fill="currentColor" />
+              </div>
+              <p className="text-white font-bold text-lg">Watch Demo (3:45)</p>
+            </div>
+          </div>
+
+          {/* Video Player Overlay */}
+          {videoPlaying && (
+            <div className="absolute inset-0 bg-black/90 flex items-center justify-center z-50">
+              <div className="relative w-full h-full flex items-center justify-center">
+                <button
+                  onClick={() => setVideoPlaying(false)}
+                  className="absolute top-4 right-4 p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors z-10"
+                >
+                  <X size={24} />
+                </button>
+                <div className="w-full h-full flex items-center justify-center">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                    title="NeuralFlow Demo"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -587,6 +697,95 @@ export default function Home() {
         <div className="text-center mt-16">
           <p className="text-gray-400 mb-4">All plans include 14-day free trial. No credit card required.</p>
           <p className="text-sm text-gray-500">Need a custom plan? <span className="text-cyan-400 cursor-pointer hover:underline">Contact our sales team</span></p>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="relative max-w-4xl mx-auto px-6 py-24 md:py-32">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        </div>
+
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
+          Frequently asked <span className="text-cyan-400">questions</span>
+        </h2>
+        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
+          Find answers to common questions about NeuralFlow
+        </p>
+
+        {/* FAQ Accordion */}
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className="rounded-2xl border border-cyan-500/20 overflow-hidden transition-all duration-300 hover:border-cyan-500/40"
+            >
+              <button
+                onClick={() => setExpandedFaq(expandedFaq === index ? -1 : index)}
+                className={`w-full px-8 py-6 flex items-center justify-between transition-all duration-300 ${
+                  expandedFaq === index
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20'
+                    : 'bg-gray-900/50 hover:bg-gray-900/70'
+                }`}
+              >
+                <h3 className="text-lg font-bold text-left">{faq.question}</h3>
+                <ChevronDown
+                  size={24}
+                  className={`flex-shrink-0 ml-4 transition-transform duration-300 ${
+                    expandedFaq === index ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {expandedFaq === index && (
+                <div className="px-8 py-6 bg-black/50 border-t border-cyan-500/20">
+                  <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* EMAIL SIGNUP CTA SECTION */}
+      <section className="relative max-w-4xl mx-auto px-6 py-24 md:py-32">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-purple-600/10 rounded-3xl blur-2xl" />
+        </div>
+
+        <div className="rounded-3xl border border-cyan-500/40 bg-gradient-to-br from-gray-900/80 to-gray-900/40 p-8 md:p-16 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Stay updated with <span className="text-cyan-400">NeuralFlow</span>
+          </h2>
+          <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+            Get early access to new features, product updates, and exclusive tips for automating your workflows.
+          </p>
+
+          {/* Email Signup Form */}
+          <form onSubmit={handleEmailSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <div className="flex-1 relative">
+              <Mail size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full pl-12 pr-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-lg hover:bg-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105 active:scale-95 whitespace-nowrap"
+            >
+              Subscribe
+            </button>
+          </form>
+
+          <p className="text-sm text-gray-500 mt-4">
+            We respect your privacy. Unsubscribe at any time.
+          </p>
         </div>
       </section>
 
