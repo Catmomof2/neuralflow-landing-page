@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X } from 'lucide-react'
+import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play } from 'lucide-react'
 
 /**
  * NeuralFlow Landing Page
@@ -12,12 +12,138 @@ import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, M
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [demoStep, setDemoStep] = useState(0)
+  const [autoPlayDemo, setAutoPlayDemo] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Auto-advance testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Auto-play demo
+  useEffect(() => {
+    if (!autoPlayDemo) return
+    const interval = setInterval(() => {
+      setDemoStep((prev) => (prev + 1) % demoSteps.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [autoPlayDemo])
+
+  const testimonials = [
+    {
+      name: 'Sarah Chen',
+      role: 'VP of Operations, TechCorp',
+      quote: 'NeuralFlow reduced our workflow automation time by 80%. We went from weeks to days.',
+      logo: '🏢',
+    },
+    {
+      name: 'Marcus Johnson',
+      role: 'Founder, DataFlow Inc',
+      quote: 'The AI-powered actions are a game-changer. No more manual data processing.',
+      logo: '📊',
+    },
+    {
+      name: 'Elena Rodriguez',
+      role: 'Head of Engineering, CloudScale',
+      quote: 'Finally, a no-code solution that actually scales. Impressive platform.',
+      logo: '⚙️',
+    },
+    {
+      name: 'James Wilson',
+      role: 'CEO, AutomateNow',
+      quote: 'The integration ecosystem is unmatched. Connects to everything we use.',
+      logo: '🔗',
+    },
+  ]
+
+  const demoSteps = [
+    {
+      title: 'Create Trigger',
+      description: 'Set up a trigger event (New Lead, Form Submission, etc.)',
+      icon: '🎯',
+      code: 'trigger: "new_lead"',
+    },
+    {
+      title: 'Add AI Action',
+      description: 'Apply AI to analyze, categorize, or transform data',
+      icon: '🤖',
+      code: 'ai_action: "categorize_lead"',
+    },
+    {
+      title: 'Connect Integration',
+      description: 'Route results to Slack, Salesforce, or 100+ apps',
+      icon: '🔌',
+      code: 'action: "send_to_slack"',
+    },
+    {
+      title: 'Deploy & Monitor',
+      description: 'Deploy instantly and monitor execution in real-time',
+      icon: '📈',
+      code: 'status: "live"',
+    },
+  ]
+
+  const pricingPlans = [
+    {
+      name: 'Starter',
+      price: '$29',
+      period: '/month',
+      description: 'Perfect for individuals and small teams',
+      features: [
+        'Up to 1,000 workflow executions/month',
+        '5 integrations',
+        'Basic AI actions',
+        'Email support',
+        'Community access',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: false,
+    },
+    {
+      name: 'Professional',
+      price: '$99',
+      period: '/month',
+      description: 'For growing teams and businesses',
+      features: [
+        'Up to 50,000 workflow executions/month',
+        '50+ integrations',
+        'Advanced AI actions',
+        'Priority email & chat support',
+        'Custom workflows',
+        'Team collaboration',
+        'API access',
+      ],
+      cta: 'Start Free Trial',
+      highlighted: true,
+    },
+    {
+      name: 'Enterprise',
+      price: 'Custom',
+      period: 'pricing',
+      description: 'For large-scale operations',
+      features: [
+        'Unlimited workflow executions',
+        'All integrations',
+        'Custom AI models',
+        '24/7 phone & dedicated support',
+        'SLA guarantee',
+        'On-premise deployment',
+        'Advanced security & compliance',
+      ],
+      cta: 'Contact Sales',
+      highlighted: false,
+    },
+  ]
 
   return (
     <div className="bg-black text-white selection:bg-cyan-500/30 overflow-hidden">
@@ -199,6 +325,268 @@ export default function Home() {
               SOC 2 Type II compliant and end-to-end encrypted.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* INTERACTIVE DEMO SECTION */}
+      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        </div>
+
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
+          See it in <span className="text-purple-400">action</span>
+        </h2>
+        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
+          Build powerful workflows in minutes with our intuitive visual builder
+        </p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Demo Steps */}
+          <div className="space-y-4">
+            {demoSteps.map((step, index) => (
+              <div
+                key={index}
+                onClick={() => {
+                  setDemoStep(index)
+                  setAutoPlayDemo(false)
+                }}
+                className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 ${
+                  demoStep === index
+                    ? 'bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/60 shadow-lg shadow-cyan-500/20'
+                    : 'bg-gray-900/50 border border-gray-800/50 hover:border-cyan-500/30'
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="text-3xl">{step.icon}</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold mb-1">{step.title}</h3>
+                    <p className="text-sm text-gray-400">{step.description}</p>
+                  </div>
+                  {demoStep === index && (
+                    <div className="text-cyan-400">
+                      <Check size={20} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Demo Visualization */}
+          <div className="relative">
+            <div className="bg-gradient-to-br from-gray-900/80 to-gray-900/40 rounded-2xl border border-cyan-500/30 p-8 min-h-96 flex flex-col justify-between">
+              {/* Code Display */}
+              <div className="bg-black/60 rounded-xl p-6 border border-cyan-500/20 font-mono text-sm space-y-2 mb-6">
+                <div className="text-gray-500">{'{'}</div>
+                <div className="text-cyan-300 pl-4">trigger: "new_lead",</div>
+                <div className="text-purple-300 pl-4">{demoSteps[demoStep].code},</div>
+                <div className="text-green-300 pl-4">status: "active"</div>
+                <div className="text-gray-500">{'}'}</div>
+              </div>
+
+              {/* Step Info */}
+              <div className="text-center">
+                <div className="text-5xl mb-4">{demoSteps[demoStep].icon}</div>
+                <h3 className="text-xl font-bold mb-2">{demoSteps[demoStep].title}</h3>
+                <p className="text-gray-400 text-sm">{demoSteps[demoStep].description}</p>
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center justify-center gap-4 mt-6">
+                <button
+                  onClick={() => setDemoStep((prev) => (prev - 1 + demoSteps.length) % demoSteps.length)}
+                  className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  onClick={() => setAutoPlayDemo(!autoPlayDemo)}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    autoPlayDemo
+                      ? 'bg-cyan-500/30 border border-cyan-400/60 text-cyan-400'
+                      : 'bg-gray-800/50 hover:bg-cyan-500/20 text-gray-400'
+                  }`}
+                >
+                  <Play size={16} />
+                  {autoPlayDemo ? 'Playing' : 'Play'}
+                </button>
+                <button
+                  onClick={() => setDemoStep((prev) => (prev + 1) % demoSteps.length)}
+                  className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+
+              {/* Step Indicator */}
+              <div className="flex justify-center gap-2 mt-4">
+                {demoSteps.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      demoStep === index ? 'w-8 bg-cyan-400' : 'w-2 bg-gray-700'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS SECTION */}
+      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+        </div>
+
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
+          Loved by <span className="text-cyan-400">teams worldwide</span>
+        </h2>
+        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
+          Join thousands of companies automating their workflows
+        </p>
+
+        {/* Testimonials Carousel */}
+        <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Current Testimonial - Large */}
+            <div className="md:col-span-1 p-8 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-purple-600/20 border border-cyan-500/40 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 min-h-80 flex flex-col justify-between">
+              <div>
+                <div className="text-5xl mb-4">{testimonials[currentTestimonial].logo}</div>
+                <p className="text-lg text-gray-100 mb-6 italic">
+                  "{testimonials[currentTestimonial].quote}"
+                </p>
+              </div>
+              <div>
+                <p className="font-bold text-white">{testimonials[currentTestimonial].name}</p>
+                <p className="text-sm text-gray-400">{testimonials[currentTestimonial].role}</p>
+              </div>
+            </div>
+
+            {/* Other Testimonials - Grid */}
+            <div className="md:col-span-1 grid grid-cols-1 gap-4">
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={index}
+                  onClick={() => setCurrentTestimonial(index)}
+                  className={`p-6 rounded-xl cursor-pointer transition-all duration-300 ${
+                    currentTestimonial === index
+                      ? 'bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/60'
+                      : 'bg-gray-900/50 border border-gray-800/50 hover:border-cyan-500/30'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-3xl">{testimonial.logo}</div>
+                    <div className="flex-1">
+                      <p className="font-bold text-sm">{testimonial.name}</p>
+                      <p className="text-xs text-gray-400">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Carousel Controls */}
+          <div className="flex justify-center gap-4 mt-8">
+            <button
+              onClick={() => setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
+              className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="flex gap-2 items-center">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonial(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    currentTestimonial === index ? 'w-8 bg-cyan-400' : 'w-2 bg-gray-700'
+                  }`}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)}
+              className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING SECTION */}
+      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+        </div>
+
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
+          Simple, transparent <span className="text-cyan-400">pricing</span>
+        </h2>
+        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
+          Choose the perfect plan for your team. Always flexible to scale.
+        </p>
+
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {pricingPlans.map((plan, index) => (
+            <div
+              key={index}
+              className={`relative rounded-2xl transition-all duration-300 ${
+                plan.highlighted
+                  ? 'bg-gradient-to-br from-cyan-600/20 to-purple-600/20 border border-cyan-500/60 shadow-lg shadow-cyan-500/30 md:scale-105'
+                  : 'bg-gray-900/50 border border-gray-800/50 hover:border-cyan-500/30'
+              }`}
+            >
+              {plan.highlighted && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="px-4 py-1 rounded-full bg-cyan-500 text-black text-xs font-bold">
+                    MOST POPULAR
+                  </span>
+                </div>
+              )}
+
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
+
+                <div className="mb-8">
+                  <span className="text-5xl font-bold">{plan.price}</span>
+                  <span className="text-gray-400 text-sm ml-2">{plan.period}</span>
+                </div>
+
+                <button
+                  className={`w-full py-3 rounded-lg font-bold transition-all duration-300 mb-8 ${
+                    plan.highlighted
+                      ? 'bg-cyan-500 text-black hover:bg-cyan-400 hover:shadow-lg hover:shadow-cyan-500/50'
+                      : 'bg-gray-800/50 text-white hover:bg-cyan-500/20 border border-gray-700/50'
+                  }`}
+                >
+                  {plan.cta}
+                </button>
+
+                <div className="space-y-4">
+                  {plan.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start gap-3">
+                      <Check size={20} className="text-cyan-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-gray-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pricing Footer */}
+        <div className="text-center mt-16">
+          <p className="text-gray-400 mb-4">All plans include 14-day free trial. No credit card required.</p>
+          <p className="text-sm text-gray-500">Need a custom plan? <span className="text-cyan-400 cursor-pointer hover:underline">Contact our sales team</span></p>
         </div>
       </section>
 
