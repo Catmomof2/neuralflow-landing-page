@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play, ChevronDown, Mail } from 'lucide-react'
+import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play, ChevronDown, Mail, ArrowRight, Calendar, User } from 'lucide-react'
+import { useAuth } from '@/_core/hooks/useAuth'
+import { trpc } from '@/lib/trpc'
 
 /**
  * NeuralFlow Landing Page
@@ -10,6 +12,10 @@ import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, M
  * - Smooth animations and interactive hover effects
  */
 export default function Home() {
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
@@ -175,11 +181,24 @@ export default function Home() {
     },
   ]
 
-  const handleEmailSignup = (e: React.FormEvent) => {
+  const newsletterMutation = trpc.landing.subscribeNewsletter.useMutation()
+  const contactMutation = trpc.landing.submitContact.useMutation()
+
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (email) {
-      alert(`Thanks for signing up! We'll send updates to ${email}`)
-      setEmail('')
+    if (!email) return
+    
+    try {
+      const result = await newsletterMutation.mutateAsync({ email })
+      if (result.success) {
+        alert('Thanks for signing up! We will send you updates soon.')
+        setEmail('')
+      } else {
+        alert('Failed to subscribe. Please try again.')
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error)
+      alert('An error occurred. Please try again.')
     }
   }
 
