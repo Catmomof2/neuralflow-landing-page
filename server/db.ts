@@ -1,12 +1,13 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, emailSignups, InsertEmailSignup, contactSubmissions, InsertContactSubmission } from "../drizzle/schema";
-import { ENV } from './_core/env';
 
-let _db: ReturnType<typeof drizzle> | null = null;
+export type DrizzleDb = ReturnType<typeof drizzle>;
+
+let _db: DrizzleDb | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
-export async function getDb() {
+export async function getDb(): Promise<DrizzleDb | null> {
   if (!_db && process.env.DATABASE_URL) {
     try {
       _db = drizzle(process.env.DATABASE_URL);
@@ -16,6 +17,17 @@ export async function getDb() {
     }
   }
   return _db;
+}
+
+/**
+ * Ensures database connection is available, throws if not
+ */
+async function ensureDb(): Promise<DrizzleDb> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("[Database] Database not available");
+  }
+  return db;
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {
@@ -30,42 +42,28 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
+    const { ENV } = await import('./_core/env');
+
     const values: InsertUser = {
       openId: user.openId,
-    };
-    const updateSet: Record<string, unknown> = {};
-
-    const textFields = ["name", "email", "loginMethod"] as const;
-    type TextField = (typeof textFields)[number];
-
-    const assignNullable = (field: TextField) => {
-      const value = user[field];
-      if (value === undefined) return;
-      const normalized = value ?? null;
-      values[field] = normalized;
-      updateSet[field] = normalized;
+      name: user.name,
+      email: user.email,
+      loginMethod: user.loginMethod,
+      lastSignedIn: user.lastSignedIn ?? new Date(),
+      role: user.role ?? (user.openId === ENV.ownerOpenId ? 'admin' : undefined),
     };
 
-    textFields.forEach(assignNullable);
+    const updateSet: Record<string, unknown> = {
+      name: user.name,
+      email: user.email,
+      loginMethod: user.loginMethod,
+      lastSignedIn: user.lastSignedIn ?? new Date(),
+    };
 
-    if (user.lastSignedIn !== undefined) {
-      values.lastSignedIn = user.lastSignedIn;
-      updateSet.lastSignedIn = user.lastSignedIn;
-    }
     if (user.role !== undefined) {
-      values.role = user.role;
       updateSet.role = user.role;
     } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
       updateSet.role = 'admin';
-    }
-
-    if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
-    }
-
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
     }
 
     await db.insert(users).values(values).onDuplicateKeyUpdate({
@@ -85,7 +83,6 @@ export async function getUserByOpenId(openId: string) {
   }
 
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -115,6 +112,9 @@ export async function addEmailSignup(email: string): Promise<void> {
   }
 }
 
+const VALID_EMAIL_STATUSES = ["active", "unsubscribed"] as const;
+type EmailStatus = (typeof VALID_EMAIL_STATUSES)[number];
+
 export async function getEmailSignups(status?: string) {
   const db = await getDb();
   if (!db) {
@@ -124,7 +124,10 @@ export async function getEmailSignups(status?: string) {
 
   try {
     if (status) {
-      return await db.select().from(emailSignups).where(eq(emailSignups.status, status as any));
+      if (!VALID_EMAIL_STATUSES.includes(status as EmailStatus)) {
+        throw new Error(`Invalid email status: ${status}`);
+      }
+      return await db.select().from(emailSignups).where(eq(emailSignups.status, status as EmailStatus));
     }
     return await db.select().from(emailSignups);
   } catch (error) {
@@ -157,6 +160,9 @@ export async function addContactSubmission(data: InsertContactSubmission): Promi
   }
 }
 
+const VALID_CONTACT_STATUSES = ["new", "in-progress", "closed"] as const;
+type ContactStatus = (typeof VALID_CONTACT_STATUSES)[number];
+
 export async function getContactSubmissions(status?: string) {
   const db = await getDb();
   if (!db) {
@@ -166,7 +172,10 @@ export async function getContactSubmissions(status?: string) {
 
   try {
     if (status) {
-      return await db.select().from(contactSubmissions).where(eq(contactSubmissions.status, status as any));
+      if (!VALID_CONTACT_STATUSES.includes(status as ContactStatus)) {
+        throw new Error(`Invalid contact status: ${status}`);
+      }
+      return await db.select().from(contactSubmissions).where(eq(contactSubmissions.status, status as ContactStatus));
     }
     return await db.select().from(contactSubmissions);
   } catch (error) {
