@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play, ChevronDown, Mail, ArrowRight, Calendar, User } from 'lucide-react'
+import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play, ChevronDown, Mail, ArrowRight, Calendar, User, Send, Building2, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/_core/hooks/useAuth'
 import { trpc } from '@/lib/trpc'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 
 /**
  * NeuralFlow Landing Page
@@ -12,8 +13,6 @@ import { trpc } from '@/lib/trpc'
  * - Smooth animations and interactive hover effects
  */
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
   let { user, loading, error, isAuthenticated, logout } = useAuth();
 
   const [isScrolled, setIsScrolled] = useState(false)
@@ -21,9 +20,17 @@ export default function Home() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [demoStep, setDemoStep] = useState(0)
   const [autoPlayDemo, setAutoPlayDemo] = useState(false)
-  const [expandedFaq, setExpandedFaq] = useState(0)
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(0)
   const [email, setEmail] = useState('')
-  const [videoPlaying, setVideoPlaying] = useState(false)
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false)
+  
+  // Contact Form State
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    company: '',
+    message: ''
+  })
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -202,26 +209,47 @@ export default function Home() {
     }
   }
 
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const result = await contactMutation.mutateAsync(contactForm)
+      if (result.success) {
+        alert('Message sent successfully! Our team will get back to you soon.')
+        setContactForm({ name: '', email: '', company: '', message: '' })
+      } else {
+        alert('Failed to send message. Please try again.')
+      }
+    } catch (error) {
+      console.error('Contact form error:', error)
+      alert('An error occurred. Please try again.')
+    }
+  }
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+      setMobileMenuOpen(false)
+    }
+  }
+
   return (
-    <div className="bg-black text-white selection:bg-cyan-500/30 overflow-hidden">
+    <div className="bg-black text-white selection:bg-cyan-500/30 overflow-hidden font-sans">
       {/* NAVIGATION */}
       <nav role="navigation" aria-label="Main navigation" className={`fixed top-0 w-full h-20 flex items-center px-6 md:px-8 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-black/80 backdrop-blur-md border-b border-cyan-500/20' : 'bg-transparent'
       }`}>
         <div className="flex-1">
-          <span className="text-xl font-bold tracking-tighter font-mono">NeuralFlow</span>
+          <span className="text-xl font-bold tracking-tighter font-mono cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>NeuralFlow</span>
         </div>
         
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-8 text-sm font-medium text-gray-400">
-          {['Features', 'Pricing', 'Docs', 'Blog'].map((link) => (
+          {['Features', 'Demo', 'Pricing', 'FAQ', 'Contact'].map((link) => (
             <li 
               key={link} 
               className="hover:text-cyan-400 transition-colors cursor-pointer duration-300"
-              onClick={() => {
-                if (link === 'Features') document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-                if (link === 'Pricing') document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={() => scrollToSection(link.toLowerCase())}
             >
               {link}
             </li>
@@ -233,7 +261,10 @@ export default function Home() {
           <button className="text-sm font-medium hover:text-cyan-400 transition-colors duration-300">
             Sign In
           </button>
-          <button className="px-5 py-2 bg-cyan-500 text-black text-sm font-semibold rounded-lg hover:bg-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105">
+          <button 
+            onClick={() => scrollToSection('contact')}
+            className="px-5 py-2 bg-cyan-500 text-black text-sm font-semibold rounded-lg hover:bg-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+          >
             Get Started
           </button>
         </div>
@@ -242,6 +273,7 @@ export default function Home() {
         <button 
           className="md:hidden ml-4 p-2 hover:bg-gray-900/50 rounded-lg transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -249,10 +281,14 @@ export default function Home() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="fixed top-16 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-cyan-500/20 z-40 md:hidden">
+        <div className="fixed top-20 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-cyan-500/20 z-40 md:hidden">
           <div className="px-6 py-4 space-y-4">
-            {['Features', 'Pricing', 'Docs', 'Blog'].map((link) => (
-              <div key={link} className="text-sm font-medium text-gray-400 hover:text-cyan-400 cursor-pointer transition-colors">
+            {['Features', 'Demo', 'Pricing', 'FAQ', 'Contact'].map((link) => (
+              <div 
+                key={link} 
+                className="text-sm font-medium text-gray-400 hover:text-cyan-400 cursor-pointer transition-colors"
+                onClick={() => scrollToSection(link.toLowerCase())}
+              >
                 {link}
               </div>
             ))}
@@ -260,7 +296,10 @@ export default function Home() {
               <button className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors text-left">
                 Sign In
               </button>
-              <button className="px-4 py-2 bg-cyan-500 text-black text-sm font-semibold rounded-lg hover:bg-cyan-400 transition-all duration-300 w-full">
+              <button 
+                onClick={() => scrollToSection('contact')}
+                className="px-4 py-2 bg-cyan-500 text-black text-sm font-semibold rounded-lg hover:bg-cyan-400 transition-all duration-300 w-full"
+              >
                 Get Started
               </button>
             </div>
@@ -269,499 +308,233 @@ export default function Home() {
       )}
 
       {/* HERO SECTION */}
-      <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 pt-20 overflow-hidden">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 -z-10 opacity-40"
-          style={{
-            backgroundImage: 'url(/images/hero-bg.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundAttachment: 'fixed'
-          }}
-        />
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-black/60 to-black" />
-        
-        {/* Animated Glow Elements */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10 animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }} />
-
-        {/* Badge */}
-        <span className="px-4 py-2 rounded-full border border-cyan-500/50 bg-cyan-500/10 text-xs font-medium text-cyan-400 mb-8 inline-block hover:border-cyan-400 hover:bg-cyan-500/20 transition-all duration-300">
-          ✨ Beta 2.0 is now live
-        </span>
-
-        {/* Main Headline */}
-        <h1 className="text-6xl md:text-8xl font-bold tracking-tight max-w-5xl leading-[1.1] mb-8">
-          Automate your workflow with{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 animate-pulse">
-            AI Intelligence
-          </span>
-        </h1>
-
-        {/* Subheadline */}
-        <p className="text-lg md:text-xl text-gray-300 max-w-2xl mb-12 leading-relaxed">
-          The next generation of automation. Connect your stack, deploy AI agents, and scale your operations without writing a single line of code.
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-16">
-          <button className="px-8 py-4 bg-cyan-500 text-black rounded-lg font-bold hover:bg-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105 active:scale-95">
-            Start Building Free
-          </button>
-          <button className="px-8 py-4 border-2 border-cyan-500/50 text-white rounded-lg font-bold hover:border-cyan-400 hover:bg-cyan-500/10 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/30">
-            Watch Demo
-          </button>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </div>
-      </section>
-
-      {/* FEATURES SECTION */}
-      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
-        {/* Section Background */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px]" />
         </div>
 
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-20">
-          Everything you need to <span className="text-cyan-400">scale</span>
-        </h2>
-
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6">
-          {/* Main Feature - Large Box */}
-          <div className="md:col-span-2 p-8 md:p-10 rounded-2xl bg-gradient-to-br from-gray-900/80 to-gray-900/40 border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 group hover:shadow-lg hover:shadow-cyan-500/20 flex flex-col justify-between">
-            <div>
-              <div className="p-3 w-fit rounded-lg bg-cyan-500/20 mb-6 group-hover:bg-cyan-500/30 transition-colors">
-                <Code className="text-cyan-400" size={32} />
-              </div>
-              <h3 className="text-2xl md:text-3xl font-bold mb-4">Visual Workflow Builder</h3>
-              <p className="text-gray-300 max-w-md text-lg">
-                Our drag-and-drop interface allows you to map out complex logic visually. Connect nodes, set triggers, and watch the magic happen.
-              </p>
-            </div>
-            <div className="mt-8 bg-black/60 rounded-xl p-4 border border-cyan-500/20 font-mono text-sm text-cyan-300 overflow-x-auto">
-              // Trigger(New Lead) → AI(Categorize) → Action(Slack)
-            </div>
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold mb-8 animate-fade-in">
+            <Zap size={14} />
+            <span>NEURALFLOW V2.0 IS NOW LIVE</span>
           </div>
-
-          {/* AI Feature - Tall Box */}
-          <div className="md:col-span-1 md:row-span-2 p-8 md:p-10 rounded-2xl bg-gradient-to-b from-purple-600/20 to-cyan-600/20 border border-purple-500/40 hover:border-purple-400/60 transition-all duration-300 group hover:shadow-lg hover:shadow-purple-500/20 flex flex-col justify-center text-center">
-            <div className="p-3 w-fit rounded-lg bg-purple-500/20 mx-auto mb-6 group-hover:bg-purple-500/30 transition-colors">
-              <Zap className="text-purple-400" size={48} />
-            </div>
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">Native AI Actions</h3>
-            <p className="text-gray-200 text-lg">
-              Summarize documents, analyze sentiment, or generate responses automatically using built-in LLMs.
-            </p>
-          </div>
-
-          {/* Small Feature 1 */}
-          <div className="p-8 rounded-2xl bg-gray-900/50 border border-cyan-500/20 hover:border-cyan-400/50 transition-all duration-300 group hover:shadow-lg hover:shadow-cyan-500/10">
-            <div className="p-3 w-fit rounded-lg bg-purple-500/20 mb-4 group-hover:bg-purple-500/30 transition-colors">
-              <Link2 className="text-purple-400" size={28} />
-            </div>
-            <h3 className="text-xl font-bold mb-2">100+ Apps</h3>
-            <p className="text-sm text-gray-400">
-              Seamlessly integrate with Slack, Stripe, and more.
-            </p>
-          </div>
-
-          {/* Small Feature 2 */}
-          <div className="p-8 rounded-2xl bg-gray-900/50 border border-cyan-500/20 hover:border-cyan-400/50 transition-all duration-300 group hover:shadow-lg hover:shadow-cyan-500/10">
-            <div className="p-3 w-fit rounded-lg bg-green-500/20 mb-4 group-hover:bg-green-500/30 transition-colors">
-              <Shield className="text-green-400" size={28} />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Bank-grade Security</h3>
-            <p className="text-sm text-gray-400">
-              SOC 2 Type II compliant and end-to-end encrypted.
-            </p>
+          
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-8 font-mono">
+            AUTOMATE WITH <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+              NEURAL PRECISION
+            </span>
+          </h1>
+          
+          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+            The next-generation AI automation platform. Build, deploy, and scale complex workflows with zero code and infinite possibilities.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button 
+              onClick={() => scrollToSection('contact')}
+              className="px-8 py-4 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105 flex items-center gap-2"
+            >
+              Get Started Free <ArrowRight size={20} />
+            </button>
+            <button 
+              onClick={() => setIsDemoModalOpen(true)}
+              className="px-8 py-4 bg-gray-900/50 border border-gray-800 text-white font-bold rounded-xl hover:bg-gray-800 transition-all duration-300 flex items-center gap-2"
+            >
+              <Play size={20} className="fill-current" /> Watch Demo
+            </button>
           </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS - VIDEO SECTION */}
-      <section id="how-it-works" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-        </div>
-
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
-          How it <span className="text-cyan-400">works</span>
-        </h2>
-        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
-          See NeuralFlow in action with our comprehensive demo video
-        </p>
-
-        {/* Video Container */}
-        <div className="relative rounded-2xl overflow-hidden border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 group">
-          {/* Video Thumbnail/Background */}
-          <div 
-            className="relative w-full aspect-video bg-gradient-to-br from-gray-900/80 to-gray-900/40 flex items-center justify-center cursor-pointer overflow-hidden"
-            onClick={() => setVideoPlaying(true)}
-          >
-            {/* Animated Background Pattern */}
-            <div className="absolute inset-0 opacity-30">
-              <div 
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: 'url(/images/feature-accent.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              />
-            </div>
-
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-
-            {/* Play Button */}
-            <div className="relative z-10 flex flex-col items-center gap-4">
-              <div className="w-24 h-24 rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center group-hover:bg-cyan-500/30 group-hover:scale-110 transition-all duration-300">
-                <Play size={48} className="text-cyan-400 ml-1" fill="currentColor" />
-              </div>
-              <p className="text-white font-bold text-lg">Watch Demo (3:45)</p>
-            </div>
-          </div>
-
-          {/* Video Player Overlay */}
-          {videoPlaying && (
-            <div className="absolute inset-0 bg-black/90 flex items-center justify-center z-50">
-              <div className="relative w-full h-full flex items-center justify-center">
-                <button
-                  onClick={() => setVideoPlaying(false)}
-                  className="absolute top-4 right-4 p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors z-10"
+      {/* DEMO SECTION */}
+      <section id="demo" className="max-w-7xl mx-auto px-6 py-24 border-y border-gray-900">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 font-mono">
+              Visual <span className="text-cyan-400">Workflow</span> Builder
+            </h2>
+            <p className="text-gray-400 text-lg mb-12">
+              Our intuitive interface allows you to map out complex business processes and inject AI at any step. No technical background required.
+            </p>
+            
+            <div className="space-y-4">
+              {demoSteps.map((step, index) => (
+                <div 
+                  key={index}
+                  onClick={() => { setDemoStep(index); setAutoPlayDemo(false); }}
+                  className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer flex items-center gap-6 ${
+                    demoStep === index 
+                      ? 'bg-cyan-500/10 border-cyan-500/50 shadow-lg shadow-cyan-500/10' 
+                      : 'bg-gray-900/30 border-gray-800 hover:border-gray-700'
+                  }`}
                 >
-                  <X size={24} />
-                </button>
-                <div className="w-full h-full flex items-center justify-center">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-                    title="NeuralFlow Demo"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    loading="lazy"
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* INTERACTIVE DEMO SECTION */}
-      <section id="demo" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-        </div>
-
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
-          See it in <span className="text-purple-400">action</span>
-        </h2>
-        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
-          Build powerful workflows in minutes with our intuitive visual builder
-        </p>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Demo Steps */}
-          <div className="space-y-4">
-            {demoSteps.map((step, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  setDemoStep(index)
-                  setAutoPlayDemo(false)
-                }}
-                className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 ${
-                  demoStep === index
-                    ? 'bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/60 shadow-lg shadow-cyan-500/20'
-                    : 'bg-gray-900/50 border border-gray-800/50 hover:border-cyan-500/30'
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="text-3xl">{step.icon}</div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-1">{step.title}</h3>
-                    <p className="text-sm text-gray-400">{step.description}</p>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${
+                    demoStep === index ? 'bg-cyan-500 text-black' : 'bg-gray-800 text-gray-400'
+                  }`}>
+                    {step.icon}
                   </div>
-                  {demoStep === index && (
-                    <div className="text-cyan-400">
-                      <Check size={20} />
-                    </div>
-                  )}
+                  <div className="flex-1">
+                    <h3 className={`font-bold ${demoStep === index ? 'text-cyan-400' : 'text-white'}`}>{step.title}</h3>
+                    <p className="text-sm text-gray-500">{step.description}</p>
+                  </div>
+                  {demoStep === index && <Check size={20} className="text-cyan-400" />}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* Demo Visualization */}
           <div className="relative">
-            <div className="bg-gradient-to-br from-gray-900/80 to-gray-900/40 rounded-2xl border border-cyan-500/30 p-8 min-h-96 flex flex-col justify-between">
-              {/* Code Display */}
-              <div className="bg-black/60 rounded-xl p-6 border border-cyan-500/20 font-mono text-sm space-y-2 mb-6">
+            <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-cyan-500/30 p-8 min-h-[500px] flex flex-col justify-between shadow-2xl shadow-cyan-500/5">
+              <div className="bg-black/60 rounded-xl p-6 border border-cyan-500/20 font-mono text-sm space-y-2 mb-6 overflow-hidden">
                 <div className="text-gray-500">{'{'}</div>
                 <div className="text-cyan-300 pl-4">trigger: "new_lead",</div>
-                <div className="text-purple-300 pl-4">{demoSteps[demoStep].code},</div>
+                <div className="text-purple-300 pl-4 animate-pulse">{demoSteps[demoStep].code},</div>
                 <div className="text-green-300 pl-4">status: "active"</div>
                 <div className="text-gray-500">{'}'}</div>
               </div>
 
-              {/* Step Info */}
-              <div className="text-center">
-                <div className="text-5xl mb-4">{demoSteps[demoStep].icon}</div>
-                <h3 className="text-xl font-bold mb-2">{demoSteps[demoStep].title}</h3>
-                <p className="text-gray-400 text-sm">{demoSteps[demoStep].description}</p>
+              <div className="text-center py-12">
+                <div className="text-7xl mb-6 animate-bounce">{demoSteps[demoStep].icon}</div>
+                <h3 className="text-2xl font-bold mb-2">{demoSteps[demoStep].title}</h3>
+                <p className="text-gray-400">{demoSteps[demoStep].description}</p>
               </div>
 
-              {/* Controls */}
-              <div className="flex items-center justify-center gap-4 mt-6">
+              <div className="flex items-center justify-center gap-4">
                 <button
                   onClick={() => setDemoStep((prev) => (prev - 1 + demoSteps.length) % demoSteps.length)}
-                  className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+                  className="p-3 rounded-xl bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+                  aria-label="Previous step"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={24} />
                 </button>
                 <button
                   onClick={() => setAutoPlayDemo(!autoPlayDemo)}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+                  className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 ${
                     autoPlayDemo
-                      ? 'bg-cyan-500/30 border border-cyan-400/60 text-cyan-400'
+                      ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-400'
                       : 'bg-gray-800/50 hover:bg-cyan-500/20 text-gray-400'
                   }`}
                 >
-                  <Play size={16} />
-                  {autoPlayDemo ? 'Playing' : 'Play'}
+                  {autoPlayDemo ? <><Activity size={18} className="animate-spin" /> Playing</> : <><Play size={18} /> Play</>}
                 </button>
                 <button
                   onClick={() => setDemoStep((prev) => (prev + 1) % demoSteps.length)}
-                  className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+                  className="p-3 rounded-xl bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
+                  aria-label="Next step"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={24} />
                 </button>
               </div>
-
-              {/* Step Indicator */}
-              <div className="flex justify-center gap-2 mt-4">
-                {demoSteps.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      demoStep === index ? 'w-8 bg-cyan-400' : 'w-2 bg-gray-700'
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-               {/* FEATURES SECTION */}
-      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">d:py-32">md:py-32">32">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-        </div>
-
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
-          Loved by <span className="text-cyan-400">teams worldwide</span>
+      {/* FEATURES/TESTIMONIALS SECTION */}
+      <section id="features" className="max-w-7xl mx-auto px-6 py-24">
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 font-mono">
+          Trusted by <span className="text-purple-500">Innovators</span>
         </h2>
-        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
-          Join thousands of companies automating their workflows
-        </p>
 
-        {/* Testimonials Carousel */}
-        <div className="relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Current Testimonial - Large */}
-            <div className="md:col-span-1 p-8 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-purple-600/20 border border-cyan-500/40 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 min-h-80 flex flex-col justify-between">
-              <div>
-                <div className="text-5xl mb-4">{testimonials[currentTestimonial].logo}</div>
-                <p className="text-lg text-gray-100 mb-6 italic">
-                  "{testimonials[currentTestimonial].quote}"
-                </p>
-              </div>
-              <div>
-                <p className="font-bold text-white">{testimonials[currentTestimonial].name}</p>
-                <p className="text-sm text-gray-400">{testimonials[currentTestimonial].role}</p>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="p-10 rounded-3xl bg-gradient-to-br from-cyan-900/20 to-purple-900/20 border border-cyan-500/30 flex flex-col justify-between min-h-[400px]">
+            <div>
+              <div className="text-6xl mb-8">{testimonials[currentTestimonial].logo}</div>
+              <p className="text-2xl text-gray-100 mb-8 italic leading-relaxed">
+                "{testimonials[currentTestimonial].quote}"
+              </p>
             </div>
+            <div>
+              <p className="text-xl font-bold text-white">{testimonials[currentTestimonial].name}</p>
+              <p className="text-cyan-400">{testimonials[currentTestimonial].role}</p>
+            </div>
+          </div>
 
-            {/* Other Testimonials - Grid */}
-            <div className="md:col-span-1 grid grid-cols-1 gap-4">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`p-6 rounded-xl cursor-pointer transition-all duration-300 ${
-                    currentTestimonial === index
-                      ? 'bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/60'
-                      : 'bg-gray-900/50 border border-gray-800/50 hover:border-cyan-500/30'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="text-3xl">{testimonial.logo}</div>
-                    <div className="flex-1">
-                      <p className="font-bold text-sm">{testimonial.name}</p>
-                      <p className="text-xs text-gray-400">{testimonial.role}</p>
-                    </div>
-                  </div>
+          <div className="grid grid-cols-1 gap-4">
+            {testimonials.map((t, i) => (
+              <div
+                key={i}
+                onClick={() => setCurrentTestimonial(i)}
+                className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 flex items-center gap-6 border ${
+                  currentTestimonial === i
+                    ? 'bg-cyan-500/10 border-cyan-500/50'
+                    : 'bg-gray-900/30 border-gray-800 hover:border-gray-700'
+                }`}
+              >
+                <div className="text-4xl">{t.logo}</div>
+                <div>
+                  <p className="font-bold">{t.name}</p>
+                  <p className="text-sm text-gray-500">{t.role}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Carousel Controls */}
-          <div className="flex justify-center gap-4 mt-8">
-            <button
-              onClick={() => setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
-              className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className="flex gap-2 items-center">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    currentTestimonial === index ? 'w-8 bg-cyan-400' : 'w-2 bg-gray-700'
-                  }`}
-                />
-              ))}
-            </div>
-            <button
-              onClick={() => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)}
-              className="p-2 rounded-lg bg-gray-800/50 hover:bg-cyan-500/20 transition-colors"
-            >
-              <ChevronRight size={20} />
-            </button>
+              </div>
+            ))}
           </div>
         </div>
       </section>
-        {/*       {/*       {/* FEATURES SECTION */}
-      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">32">32">4 md:py-32">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+
+      {/* PRICING SECTION */}
+      <section id="pricing" className="max-w-7xl mx-auto px-6 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 font-mono">Transparent <span className="text-cyan-400">Pricing</span></h2>
+          <p className="text-gray-400 text-lg">Scale your automation as you grow.</p>
         </div>
 
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
-          Simple, transparent <span className="text-cyan-400">pricing</span>
-        </h2>
-        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
-          Choose the perfect plan for your team. Always flexible to scale.
-        </p>
-
-        {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {pricingPlans.map((plan, index) => (
+          {pricingPlans.map((plan, i) => (
             <div
-              key={index}
-              className={`relative rounded-2xl transition-all duration-300 ${
+              key={i}
+              className={`relative p-8 rounded-3xl border transition-all duration-500 ${
                 plan.highlighted
-                  ? 'bg-gradient-to-br from-cyan-600/20 to-purple-600/20 border border-cyan-500/60 shadow-lg shadow-cyan-500/30 md:scale-105'
-                  : 'bg-gray-900/50 border border-gray-800/50 hover:border-cyan-500/30'
+                  ? 'bg-gradient-to-b from-cyan-900/20 to-black border-cyan-500/50 shadow-2xl shadow-cyan-500/10 md:scale-105 z-10'
+                  : 'bg-gray-900/30 border-gray-800 hover:border-gray-700'
               }`}
             >
               {plan.highlighted && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="px-4 py-1 rounded-full bg-cyan-500 text-black text-xs font-bold">
-                    MOST POPULAR
-                  </span>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-cyan-500 text-black text-xs font-bold rounded-full">
+                  MOST POPULAR
                 </div>
               )}
-
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
-
-                <div className="mb-8">
-                  <span className="text-5xl font-bold">{plan.price}</span>
-                  <span className="text-gray-400 text-sm ml-2">{plan.period}</span>
-                </div>
-
-                <button
-                  className={`w-full py-3 rounded-lg font-bold transition-all duration-300 mb-8 ${
-                    plan.highlighted
-                      ? 'bg-cyan-500 text-black hover:bg-cyan-400 hover:shadow-lg hover:shadow-cyan-500/50'
-                      : 'bg-gray-800/50 text-white hover:bg-cyan-500/20 border border-gray-700/50'
-                  }`}
-                >
-                  {plan.cta}
-                </button>
-
-                <div className="space-y-4">
-                  {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start gap-3">
-                      <Check size={20} className="text-cyan-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-gray-300">{feature}</span>
-                    </div>
-                  ))}
-                </div>
+              <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+              <p className="text-gray-500 text-sm mb-8">{plan.description}</p>
+              <div className="mb-8">
+                <span className="text-5xl font-bold">{plan.price}</span>
+                <span className="text-gray-500 ml-2">{plan.period}</span>
               </div>
+              <button className={`w-full py-4 rounded-xl font-bold mb-8 transition-all ${
+                plan.highlighted ? 'bg-cyan-500 text-black hover:bg-cyan-400' : 'bg-gray-800 text-white hover:bg-gray-700'
+              }`}>
+                {plan.cta}
+              </button>
+              <ul className="space-y-4">
+                {plan.features.map((f, fi) => (
+                  <li key={fi} className="flex items-center gap-3 text-sm text-gray-400">
+                    <Check size={16} className="text-cyan-400" /> {f}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
+      </section>
 
-        {/* Pricing Footer */}
-        <div className="text-center mt-16">
-          <p className="text-gray-400 mb-4">All plans include 14-day free trial. No credit card required.</p>
-          <p className="text-sm text-gray-500">Need a custom plan? <span className="text-cyan-400 cursor-pointer hover:underline">Contact our sales team</span></p>
-        </div>
-      </section>      {/* FEATURES SECTION */}
-      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">      <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-        </div>
-
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-4">
-          Frequently asked <span className="text-cyan-400">questions</span>
-        </h2>
-        <p className="text-center text-gray-400 text-lg mb-16 max-w-2xl mx-auto">
-          Find answers to common questions about NeuralFlow
-        </p>
-
-        {/* FAQ Accordion */}
+      {/* FAQ SECTION */}
+      <section id="faq" className="max-w-3xl mx-auto px-6 py-24">
+        <h2 className="text-4xl font-bold text-center mb-16 font-mono">FAQ</h2>
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="rounded-2xl border border-cyan-500/20 overflow-hidden transition-all duration-300 hover:border-cyan-500/40"
-            >
-              <button
-              onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                  aria-expanded={expandedFaq === index}
-                className={`w-full px-8 py-6 flex items-center justify-between transition-all duration-300 ${
-                  expandedFaq === index
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20'
-                    : 'bg-gray-900/50 hover:bg-gray-900/70'
-                }`}
+          {faqs.map((faq, i) => (
+            <div key={i} className="border border-gray-800 rounded-2xl overflow-hidden">
+              <button 
+                onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                className="w-full p-6 flex items-center justify-between bg-gray-900/20 hover:bg-gray-900/40 transition-colors"
               >
-                <h3 className="text-lg font-bold text-left">{faq.question}</h3>
-                <ChevronDown
-                  size={24}
-                  className={`flex-shrink-0 ml-4 transition-transform duration-300 ${
-                    expandedFaq === index ? 'rotate-180' : ''
-                  }`}
-                />
+                <span className="font-bold text-left">{faq.question}</span>
+                <ChevronDown size={20} className={`transition-transform ${expandedFaq === i ? 'rotate-180' : ''}`} />
               </button>
-
-              {expandedFaq === index && (
-                <div className="px-8 py-6 bg-black/50 border-t border-cyan-500/20">
-                  <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
+              {expandedFaq === i && (
+                <div className="p-6 text-gray-400 border-t border-gray-800 bg-black/40">
+                  {faq.answer}
                 </div>
               )}
             </div>
@@ -769,92 +542,166 @@ export default function Home() {
         </div>
       </section>
 
-      {/* EMAIL SIGNUP CTA SECTION */}
-      <section className="relative max-w-4xl mx-auto px-6 py-24 md:py-32">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-purple-600/10 rounded-3xl blur-2xl" />
-        </div>
+      {/* CONTACT SECTION */}
+      <section id="contact" className="max-w-7xl mx-auto px-6 py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div>
+            <h2 className="text-4xl md:text-6xl font-bold mb-8 font-mono">Get in <span className="text-purple-500">Touch</span></h2>
+            <p className="text-gray-400 text-lg mb-12">
+              Ready to transform your workflow? Our team is here to help you build the future of automation.
+            </p>
+            
+            <div className="space-y-8">
+              <div className="flex items-center gap-6">
+                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                  <Mail size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Email us at</p>
+                  <p className="font-bold">hello@neuralflow.ai</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-6">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
+                  <MessageSquare size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Chat with us</p>
+                  <p className="font-bold">Live support 24/7</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <div className="rounded-3xl border border-cyan-500/40 bg-gradient-to-br from-gray-900/80 to-gray-900/40 p-8 md:p-16 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Stay updated with <span className="text-cyan-400">NeuralFlow</span>
-          </h2>
-          <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-            Get early access to new features, product updates, and exclusive tips for automating your workflows.
-          </p>
-
-          {/* Email Signup Form */}
-          <form onSubmit={handleEmailSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <div className="flex-1 relative">
-              <Mail size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+          <form onSubmit={handleContactSubmit} className="p-8 md:p-12 rounded-3xl bg-gray-900/30 border border-gray-800 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-400 ml-1">Name</label>
+                <div className="relative">
+                  <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input 
+                    type="text" 
+                    required
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                    className="w-full pl-12 pr-4 py-4 rounded-xl bg-black border border-gray-800 focus:border-cyan-500 outline-none transition-colors"
+                    placeholder="John Doe"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-400 ml-1">Email</label>
+                <div className="relative">
+                  <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input 
+                    type="email" 
+                    required
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                    className="w-full pl-12 pr-4 py-4 rounded-xl bg-black border border-gray-800 focus:border-cyan-500 outline-none transition-colors"
+                    placeholder="john@company.com"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-400 ml-1">Company (Optional)</label>
+              <div className="relative">
+                <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input 
+                  type="text" 
+                  value={contactForm.company}
+                  onChange={(e) => setContactForm({...contactForm, company: e.target.value})}
+                  className="w-full pl-12 pr-4 py-4 rounded-xl bg-black border border-gray-800 focus:border-cyan-500 outline-none transition-colors"
+                  placeholder="TechCorp Inc."
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-400 ml-1">Message</label>
+              <textarea 
                 required
-                className="w-full pl-12 pr-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                rows={4}
+                value={contactForm.message}
+                onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
+                className="w-full p-4 rounded-xl bg-black border border-gray-800 focus:border-cyan-500 outline-none transition-colors resize-none"
+                placeholder="How can we help you?"
               />
             </div>
-            <button
+            <button 
               type="submit"
-              className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-lg hover:bg-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/50 hover:scale-105 active:scale-95 whitespace-nowrap"
+              className="w-full py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-black font-bold rounded-xl hover:shadow-lg hover:shadow-cyan-500/20 transition-all flex items-center justify-center gap-2"
             >
-              Subscribe
+              Send Message <Send size={18} />
             </button>
           </form>
-
-          <p className="text-sm text-gray-500 mt-4">
-            We respect your privacy. Unsubscribe at any time.
-          </p>
-        </div>
-      </section      {/* FEAT      {/* FEATURES SECTION */}
-      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-          <div className="text-center group">
-            <div className="text-4xl md:text-5xl font-bold text-cyan-400 mb-2 group-hover:text-purple-400 transition-colors">10K+</div>
-            <p className="text-gray-400 text-lg">Active Users</p>
-          </div>
-          <div className="text-center group">
-            <div className="text-4xl md:text-5xl font-bold text-purple-400 mb-2 group-hover:text-cyan-400 transition-colors">99.9%</div>
-            <p className="text-gray-400 text-lg">Uptime SLA</p>
-          </div>
-          <div className="text-center group">
-            <div className="text-4xl md:text-5xl font-bold text-cyan-400 mb-2 group-hover:text-purple-400 transition-colors">500M+</div>
-            <p className="text-gray-400 text-lg">Workflows Executed</p>
-          </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="relative border-t border-cyan-500/20 py-12 md:py-16 px-6 md:px-8 bg-gradient-to-b from-transparent to-black/50">
+      <footer className="border-t border-gray-900 py-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+            <div className="col-span-1 md:col-span-2">
+              <span className="text-2xl font-bold font-mono mb-6 block">NeuralFlow</span>
+              <p className="text-gray-500 max-w-sm mb-8">
+                Building the future of autonomous workflows. Empowering teams to focus on what matters most.
+              </p>
+              <div className="flex gap-4">
+                <Twitter className="text-gray-500 hover:text-cyan-400 cursor-pointer transition-colors" />
+                <Github className="text-gray-500 hover:text-cyan-400 cursor-pointer transition-colors" />
+                <Linkedin className="text-gray-500 hover:text-cyan-400 cursor-pointer transition-colors" />
+              </div>
+            </div>
             <div>
-              <span className="text-xl font-bold tracking-tighter font-mono">NeuralFlow</span>
-              <p className="text-gray-500 text-sm mt-3">© 2026 NeuralFlow Inc. All rights reserved.</p>
+              <h4 className="font-bold mb-6">Product</h4>
+              <ul className="space-y-4 text-gray-500 text-sm">
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Features</li>
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Integrations</li>
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Pricing</li>
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Changelog</li>
+              </ul>
             </div>
-            <div className="flex justify-center md:justify-start space-x-6 text-gray-400">
-              <Twitter size={20} className="hover:text-cyan-400 cursor-pointer transition-colors duration-300" />
-              <Github size={20} className="hover:text-cyan-400 cursor-pointer transition-colors duration-300" />
-              <Linkedin size={20} className="hover:text-cyan-400 cursor-pointer transition-colors duration-300" />
-            </div>
-            <div className="flex flex-col md:flex-row md:justify-end space-y-2 md:space-y-0 md:space-x-8 text-sm text-gray-400">
-              <span className="hover:text-cyan-400 cursor-pointer transition-colors duration-300">Privacy</span>
-              <span className="hover:text-cyan-400 cursor-pointer transition-colors duration-300">Terms</span>
-              <span className="hover:text-cyan-400 cursor-pointer transition-colors duration-300">Security</span>
+            <div>
+              <h4 className="font-bold mb-6">Company</h4>
+              <ul className="space-y-4 text-gray-500 text-sm">
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">About</li>
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Blog</li>
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Careers</li>
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Contact</li>
+              </ul>
             </div>
           </div>
-
-          {/* Divider */}
-          <div className="border-t border-cyan-500/10" />
-
-          {/* Bottom Info */}
-          <div className="mt-8 text-center text-xs text-gray-500">
-            <p>Crafted with precision. Powered by AI.</p>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-gray-900 text-xs text-gray-600">
+            <p>© 2026 NeuralFlow Inc. All rights reserved.</p>
+            <div className="flex gap-8">
+              <span className="hover:text-gray-400 cursor-pointer">Privacy Policy</span>
+              <span className="hover:text-gray-400 cursor-pointer">Terms of Service</span>
+              <span className="hover:text-gray-400 cursor-pointer">Cookie Policy</span>
+            </div>
           </div>
         </div>
       </footer>
+
+      {/* DEMO MODAL */}
+      <Dialog open={isDemoModalOpen} onOpenChange={setIsDemoModalOpen}>
+        <DialogContent className="bg-gray-900 border-gray-800 text-white max-w-4xl p-0 overflow-hidden">
+          <div className="aspect-video bg-black flex items-center justify-center relative group">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+              <div>
+                <h3 className="text-2xl font-bold mb-2">NeuralFlow Platform Overview</h3>
+                <p className="text-gray-400">See how easy it is to automate your business processes.</p>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="w-20 h-20 rounded-full bg-cyan-500 flex items-center justify-center text-black mb-4 mx-auto cursor-pointer hover:scale-110 transition-transform">
+                <Play size={32} className="fill-current ml-1" />
+              </div>
+              <p className="text-cyan-400 font-mono text-sm tracking-widest">INITIALIZING DEMO SEQUENCE...</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
