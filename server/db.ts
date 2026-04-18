@@ -160,7 +160,7 @@ export async function addContactSubmission(data: InsertContactSubmission): Promi
   }
 }
 
-const VALID_CONTACT_STATUSES = ["new", "in-progress", "closed"] as const;
+const VALID_CONTACT_STATUSES = ["new", "read", "responded"] as const;
 type ContactStatus = (typeof VALID_CONTACT_STATUSES)[number];
 
 export async function getContactSubmissions(status?: string) {

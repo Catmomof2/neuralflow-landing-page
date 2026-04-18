@@ -205,7 +205,7 @@ export default function Home() {
   return (
     <div className="bg-black text-white selection:bg-cyan-500/30 overflow-hidden">
       {/* NAVIGATION */}
-      <nav className={`fixed top-0 w-full h-16 flex items-center px-6 md:px-8 z-50 transition-all duration-300 ${
+      <nav role="navigation" aria-label="Main navigation" className={`fixed top-0 w-full h-20 flex items-center px-6 md:px-8 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-black/80 backdrop-blur-md border-b border-cyan-500/20' : 'bg-transparent'
       }`}>
         <div className="flex-1">
@@ -218,6 +218,10 @@ export default function Home() {
             <li 
               key={link} 
               className="hover:text-cyan-400 transition-colors cursor-pointer duration-300"
+              onClick={() => {
+                if (link === 'Features') document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                if (link === 'Pricing') document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
               {link}
             </li>
@@ -321,7 +325,7 @@ export default function Home() {
       </section>
 
       {/* FEATURES SECTION */}
-      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
         {/* Section Background */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
@@ -386,7 +390,7 @@ export default function Home() {
       </section>
 
       {/* HOW IT WORKS - VIDEO SECTION */}
-      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+      <section id="how-it-works" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
         </div>
@@ -448,6 +452,7 @@ export default function Home() {
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    loading="lazy"
                     className="w-full h-full"
                   />
                 </div>
@@ -458,7 +463,7 @@ export default function Home() {
       </section>
 
       {/* INTERACTIVE DEMO SECTION */}
-      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+      <section id="demo" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
         </div>
@@ -564,8 +569,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIALS SECTION */}
-      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+               {/* FEATURES SECTION */}
+      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">d:py-32">md:py-32">32">
         <div className="absolute inset-0 -z-10">
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
         </div>
@@ -646,9 +651,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* PRICING SECTION */}
-      <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
+        {/*       {/*       {/* FEATURES SECTION */}
+      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">32">32">4 md:py-32">
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
@@ -717,11 +721,8 @@ export default function Home() {
           <p className="text-gray-400 mb-4">All plans include 14-day free trial. No credit card required.</p>
           <p className="text-sm text-gray-500">Need a custom plan? <span className="text-cyan-400 cursor-pointer hover:underline">Contact our sales team</span></p>
         </div>
-      </section>
-
-      {/* FAQ SECTION */}
-      <section className="relative max-w-4xl mx-auto px-6 py-24 md:py-32">
-        <div className="absolute inset-0 -z-10">
+      </section>      {/* FEATURES SECTION */}
+      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">      <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
         </div>
@@ -741,7 +742,8 @@ export default function Home() {
               className="rounded-2xl border border-cyan-500/20 overflow-hidden transition-all duration-300 hover:border-cyan-500/40"
             >
               <button
-                onClick={() => setExpandedFaq(expandedFaq === index ? -1 : index)}
+              onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                  aria-expanded={expandedFaq === index}
                 className={`w-full px-8 py-6 flex items-center justify-between transition-all duration-300 ${
                   expandedFaq === index
                     ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20'
@@ -806,10 +808,8 @@ export default function Home() {
             We respect your privacy. Unsubscribe at any time.
           </p>
         </div>
-      </section>
-
-      {/* STATS SECTION */}
-      <section className="relative max-w-7xl mx-auto px-6 py-20 md:py-28">
+      </section      {/* FEAT      {/* FEATURES SECTION */}
+      <section id="features" className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           <div className="text-center group">
             <div className="text-4xl md:text-5xl font-bold text-cyan-400 mb-2 group-hover:text-purple-400 transition-colors">10K+</div>
