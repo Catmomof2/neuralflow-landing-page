@@ -5,6 +5,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+import { Buffer } from "node:buffer";
+import process from "node:process";
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin

@@ -4,10 +4,11 @@ import { createServer } from "http";
 import rateLimit from "express-rate-limit";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
-import { appRouter } from "../routers";
-import { createContext } from "./context";
-import { serveStatic, setupVite } from "./vite";
+import { registerOAuthRoutes } from "./oauth.ts";
+import { appRouter } from "../routers.ts";
+import { createContext } from "./context.ts";
+import { serveStatic, setupVite } from "./vite.ts";
+import process from "node:process";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {

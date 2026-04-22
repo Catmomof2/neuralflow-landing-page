@@ -1,17 +1,17 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
+import { Toaster } from "./components/ui/sonner.tsx";
+import { TooltipProvider } from "./components/ui/tooltip.tsx";
+import NotFound from "./pages/NotFound.tsx";
 import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import ErrorBoundary from "./components/ErrorBoundary.tsx";
+import { ThemeProvider } from "./contexts/ThemeContext.tsx";
+import Home from "./pages/Home.tsx";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
+      <Route path="/" component={Home} />
+      <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>

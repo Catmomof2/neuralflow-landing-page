@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play, ChevronDown, Mail, ArrowRight, Calendar, User, Send, Building2, MessageSquare } from 'lucide-react'
-import { useAuth } from '@/_core/hooks/useAuth'
-import { trpc } from '@/lib/trpc'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { useAuth } from '../_core/hooks/useAuth.ts'
+import { trpc } from '../lib/trpc.ts'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog.tsx'
 
 /**
  * NeuralFlow Landing Page
@@ -33,9 +33,9 @@ export default function Home() {
   })
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const handleScroll = () => setIsScrolled(globalThis.scrollY > 20)
+    globalThis.addEventListener('scroll', handleScroll)
+    return () => globalThis.removeEventListener('scroll', handleScroll)
   }, [])
 
   // Auto-advance testimonials
@@ -240,7 +240,7 @@ export default function Home() {
         isScrolled ? 'bg-black/80 backdrop-blur-md border-b border-cyan-500/20' : 'bg-transparent'
       }`}>
         <div className="flex-1">
-          <span className="text-xl font-bold tracking-tighter font-mono cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>NeuralFlow</span>
+          <span className="text-xl font-bold tracking-tighter font-mono cursor-pointer" onClick={() => globalThis.scrollTo({ top: 0, behavior: 'smooth' })}>NeuralFlow</span>
         </div>
         
         {/* Desktop Menu */}

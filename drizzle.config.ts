@@ -1,4 +1,5 @@
 import { defineConfig } from "drizzle-kit";
+import process from "node:process";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {

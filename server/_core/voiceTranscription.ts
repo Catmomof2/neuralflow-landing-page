@@ -25,7 +25,8 @@
  * });
  * ```
  */
-import { ENV } from "./env";
+import { ENV } from "./env.ts";
+import { Buffer } from "node:buffer";
 
 export type TranscribeOptions = {
   audioUrl: string; // URL to the audio file (e.g., S3 URL)

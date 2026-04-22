@@ -77,8 +77,8 @@
 /// <reference types="@types/google.maps" />
 
 import { useEffect, useRef } from "react";
-import { usePersistFn } from "@/hooks/usePersistFn";
-import { cn } from "@/lib/utils";
+import { usePersistFn } from "../hooks/usePersistFn.ts";
+import { cn } from "../lib/utils.ts";
 
 declare global {
   interface Window {
@@ -131,7 +131,7 @@ export function MapView({
       console.error("Map container not found");
       return;
     }
-    map.current = new window.google.maps.Map(mapContainer.current, {
+    map.current = new globalThis.google.maps.Map(mapContainer.current, {
       zoom: initialZoom,
       center: initialCenter,
       mapTypeControl: true,

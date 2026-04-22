@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, emailSignups, InsertEmailSignup, contactSubmissions, InsertContactSubmission } from "../drizzle/schema";
+import { InsertUser, users, emailSignups, InsertEmailSignup, contactSubmissions, InsertContactSubmission } from "../drizzle/schema.ts";
+import process from "node:process";
 
 export type DrizzleDb = ReturnType<typeof drizzle>;
 
@@ -42,7 +43,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
-    const { ENV } = await import('./_core/env');
+    const { ENV } = await import('./_core/env.ts');
 
     const values: InsertUser = {
       openId: user.openId,

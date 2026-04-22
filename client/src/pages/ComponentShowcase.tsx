@@ -3,11 +3,11 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from "../components/ui/accordion.tsx";
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
+import { AspectRatio } from "../components/ui/aspect-ratio.tsx";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar.tsx";
+import { Badge } from "../components/ui/badge.tsx";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,9 +15,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+} from "../components/ui/breadcrumb.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Calendar } from "../components/ui/calendar.tsx";
 import {
   Card,
   CardContent,
@@ -25,20 +25,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../components/ui/card.tsx";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "../components/ui/carousel.tsx";
+import { Checkbox } from "../components/ui/checkbox.tsx";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "../components/ui/collapsible.tsx";
 import {
   Command,
   CommandEmpty,
@@ -46,13 +46,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "../components/ui/command.tsx";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from "../components/ui/context-menu.tsx";
 import {
   Dialog,
   DialogContent,
@@ -60,7 +60,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "../components/ui/dialog.tsx";
 import {
   Drawer,
   DrawerClose,
@@ -70,7 +70,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from "../components/ui/drawer.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -78,19 +78,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../components/ui/dropdown-menu.tsx";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Input } from "@/components/ui/input";
+} from "../components/ui/hover-card.tsx";
+import { Input } from "../components/ui/input.tsx";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { Label } from "@/components/ui/label";
+} from "../components/ui/input-otp.tsx";
+import { Label } from "../components/ui/label.tsx";
 import {
   Menubar,
   MenubarContent,
@@ -98,7 +98,7 @@ import {
   MenubarMenu,
   MenubarSeparator,
   MenubarTrigger,
-} from "@/components/ui/menubar";
+} from "../components/ui/menubar.tsx";
 import {
   Pagination,
   PaginationContent,
@@ -106,28 +106,28 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "../components/ui/pagination.tsx";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "../components/ui/popover.tsx";
+import { Progress } from "../components/ui/progress.tsx";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group.tsx";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "../components/ui/resizable.tsx";
+import { ScrollArea } from "../components/ui/scroll-area.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+} from "../components/ui/select.tsx";
+import { Separator } from "../components/ui/separator.tsx";
 import {
   Sheet,
   SheetContent,
@@ -135,10 +135,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
+} from "../components/ui/sheet.tsx";
+import { Skeleton } from "../components/ui/skeleton.tsx";
+import { Slider } from "../components/ui/slider.tsx";
+import { Switch } from "../components/ui/switch.tsx";
 import {
   Table,
   TableBody,
@@ -147,17 +147,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { Toggle } from "@/components/ui/toggle";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+} from "../components/ui/table.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
+import { Textarea } from "../components/ui/textarea.tsx";
+import { Toggle } from "../components/ui/toggle.tsx";
+import { ToggleGroup, ToggleGroupItem } from "../components/ui/toggle-group.tsx";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useTheme } from "@/contexts/ThemeContext";
+} from "../components/ui/tooltip.tsx";
+import { useTheme } from "../contexts/ThemeContext.tsx";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
@@ -171,13 +171,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast as sonnerToast } from "sonner";
-import { AIChatBox, type Message } from "@/components/AIChatBox";
+import { AIChatBox, type Message } from "../components/AIChatBox.tsx";
 
 export default function ComponentsShowcase() {
   const { theme, toggleTheme } = useTheme();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [datePickerDate, setDatePickerDate] = useState<Date>();
-  const [selectedFruits, setSelectedFruits] = useState<string[]>([]);
+
   const [progress, setProgress] = useState(33);
   const [currentPage, setCurrentPage] = useState(2);
   const [openCombobox, setOpenCombobox] = useState(false);

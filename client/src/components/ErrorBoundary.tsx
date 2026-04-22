@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils.ts";
 import { AlertTriangle, RotateCcw } from "lucide-react";
 import { Component, ReactNode } from "react";
 
@@ -40,7 +40,7 @@ class ErrorBoundary extends Component<Props, State> {
             </div>
 
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => globalThis.location.reload()}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-lg",
                 "bg-primary text-primary-foreground",

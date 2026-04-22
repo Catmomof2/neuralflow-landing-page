@@ -1,11 +1,11 @@
-import { trpc } from "@/lib/trpc";
-import { UNAUTHED_ERR_MSG } from '@shared/const';
+import { trpc } from "./lib/trpc.ts";
+import { UNAUTHED_ERR_MSG } from '../../shared/const.ts';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
-import App from "./App";
-import { getLoginUrl } from "./const";
+import App from "./App.tsx";
+import { getLoginUrl } from "./const.ts";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -18,7 +18,7 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
   if (!isUnauthorized) return;
 
-  window.location.href = getLoginUrl();
+  globalThis.location.href = getLoginUrl();
 };
 
 queryClient.getQueryCache().subscribe(event => {

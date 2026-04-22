@@ -13,7 +13,7 @@
   "use strict";
 
   // Prevent double initialization
-  if (window.__MANUS_DEBUG_COLLECTOR__) return;
+  if (globalThis.__MANUS_DEBUG_COLLECTOR__) return;
 
   // ==========================================================================
   // Configuration
@@ -242,7 +242,7 @@
       timestamp: Date.now(),
       kind: kind,
       url: location.href,
-      viewport: { width: window.innerWidth, height: window.innerHeight },
+      viewport: { width: globalThis.innerWidth, height: globalThis.innerHeight },
       payload: sanitizeValue(payload),
     };
     store.uiEvents.push(entry);
@@ -326,7 +326,7 @@
     );
 
     // Throttled scroll events
-    window.addEventListener(
+    globalThis.addEventListener(
       "scroll",
       function () {
         var now = Date.now();
@@ -334,10 +334,10 @@
         store.lastScrollTime = now;
 
         logUiEvent("scroll", {
-          scrollX: window.scrollX,
-          scrollY: window.scrollY,
+          scrollX: globalThis.scrollX,
+          scrollY: globalThis.scrollY,
           documentHeight: document.documentElement.scrollHeight,
-          viewportHeight: window.innerHeight,
+          viewportHeight: globalThis.innerHeight,
         });
       },
       { passive: true }
@@ -360,10 +360,10 @@
       nav("replaceState");
     };
 
-    window.addEventListener("popstate", function () {
+    globalThis.addEventListener("popstate", function () {
       nav("popstate");
     });
-    window.addEventListener("hashchange", function () {
+    globalThis.addEventListener("hashchange", function () {
       nav("hashchange");
     });
   }
@@ -398,7 +398,7 @@
     };
   });
 
-  window.addEventListener("error", function (event) {
+  globalThis.addEventListener("error", function (event) {
     store.consoleLogs.push({
       timestamp: Date.now(),
       level: "ERROR",
@@ -425,7 +425,7 @@
     });
   });
 
-  window.addEventListener("unhandledrejection", function (event) {
+  globalThis.addEventListener("unhandledrejection", function (event) {
     var reason = event.reason;
     store.consoleLogs.push({
       timestamp: Date.now(),
@@ -450,9 +450,9 @@
   // Fetch Interception
   // ==========================================================================
 
-  var originalFetch = window.fetch.bind(window);
+  var originalFetch = globalThis.fetch.bind(window);
 
-  window.fetch = function (input, init) {
+  globalThis.fetch = function (input, init) {
     init = init || {};
     var startTime = Date.now();
     // Handle string, Request object, or URL object
@@ -757,7 +757,7 @@
   setInterval(reportLogs, CONFIG.reportInterval);
 
   // Report on page unload
-  window.addEventListener("beforeunload", function () {
+  globalThis.addEventListener("beforeunload", function () {
     var consoleLogs = store.consoleLogs;
     var networkRequests = store.networkRequests;
     var uiEvents = store.uiEvents;
@@ -811,7 +811,7 @@
   }
 
   // Mark as initialized
-  window.__MANUS_DEBUG_COLLECTOR__ = {
+  globalThis.__MANUS_DEBUG_COLLECTOR__ = {
     version: "2.0-no-rrweb",
     store: store,
     forceReport: reportLogs,
