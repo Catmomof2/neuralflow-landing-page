@@ -22,6 +22,7 @@ overrides:
   rollup: ^4.59.0
   mdast-util-to-hast: ^13.2.1
   esbuild: ^0.25.0
+  copy-anything@<=4.0.4: 4.0.4
 
 patchedDependencies:
   wouter@3.7.1:
@@ -2312,9 +2313,9 @@ packages:
     resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
     engines: {node: '>=18'}
 
-  copy-anything@3.0.5:
-    resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
-    engines: {node: '>=12.13'}
+  copy-anything@4.0.4:
+    resolution: {integrity: sha512-1n4wXJ1/kVjOVADnP++yEh46uvvdvxDFRHPRlc66ya2jh27OwwNMcj6Fz4lf5Mnu8mc8aAqnfk49LYD2612AOA==}
+    engines: {node: '>=18'}
 
   cose-base@1.0.3:
     resolution: {integrity: sha512-s9whTXInMSgAp/NVXVNuVxVKzGH2qck3aQlVHxDCdAEPgtMKwc4Wq6/QKhgdEdgbLSi9rBTAcPoRa6JpiG4ksg==}
@@ -3001,9 +3002,9 @@ packages:
   is-property@1.0.2:
     resolution: {integrity: sha512-Ks/IoX00TtClbGQr4TWXemAnktAQvYB7HzcCxDGqEZU6oCmb2INHuOoKxbtR+HFkmYWBKv/dOZtGRiAjDhj92g==}
 
-  is-what@4.1.16:
-    resolution: {integrity: sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A==}
-    engines: {node: '>=12.13'}
+  is-what@5.5.0:
+    resolution: {integrity: sha512-oG7cgbmg5kLYae2N5IVd3jm2s+vldjxJzK1pcu9LfpGuQ93MQSzo0okvRna+7y5ifrD+20FE8FvjusyGaz14fw==}
+    engines: {node: '>=18'}
 
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
@@ -6631,9 +6632,9 @@ snapshots:
 
   cookie@1.1.1: {}
 
-  copy-anything@3.0.5:
+  copy-anything@4.0.4:
     dependencies:
-      is-what: 4.1.16
+      is-what: 5.5.0
 
   cose-base@1.0.3:
     dependencies:
@@ -7333,7 +7334,7 @@ snapshots:
 
   is-property@1.0.2: {}
 
-  is-what@4.1.16: {}
+  is-what@5.5.0: {}
 
   jiti@2.6.1: {}
 
@@ -8448,7 +8449,7 @@ snapshots:
 
   superjson@1.13.3:
     dependencies:
-      copy-anything: 3.0.5
+      copy-anything: 4.0.4
 
   tailwind-merge@3.3.1: {}
 

@@ -126,7 +126,8 @@
       "path-to-regexp": "^0.1.13",
       "rollup": "^4.59.0",
       "mdast-util-to-hast": "^13.2.1",
-      "esbuild": "^0.25.0"
+      "esbuild": "^0.25.0",
+      "copy-anything@<=4.0.4": "4.0.4"
     }
   }
 }
