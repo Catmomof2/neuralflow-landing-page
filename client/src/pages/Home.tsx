@@ -235,6 +235,9 @@ export default function Home() {
 
   return (
     <div className="bg-black text-white selection:bg-cyan-500/30 overflow-hidden font-sans">
+      {/* Skip to content link for accessibility */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-cyan-500 focus:text-black focus:rounded-lg focus:font-bold">Skip to main content</a>
+
       {/* NAVIGATION */}
       <nav role="navigation" aria-label="Main navigation" className={`fixed top-0 w-full h-20 flex items-center px-6 md:px-8 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-black/80 backdrop-blur-md border-b border-cyan-500/20' : 'bg-transparent'
@@ -307,8 +310,9 @@ export default function Home() {
         </div>
       )}
 
+      <main id="main-content">
       {/* HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
+      <section aria-label="Hero" className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px]" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px]" />
@@ -349,10 +353,10 @@ export default function Home() {
       </section>
 
       {/* DEMO SECTION */}
-      <section id="demo" className="max-w-7xl mx-auto px-6 py-24 border-y border-gray-900">
+      <section id="demo" aria-labelledby="demo-heading" className="max-w-7xl mx-auto px-6 py-24 border-y border-gray-900">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 font-mono">
+            <h2 id="demo-heading" className="text-4xl md:text-6xl font-bold mb-6 font-mono">
               Visual <span className="text-cyan-400">Workflow</span> Builder
             </h2>
             <p className="text-gray-400 text-lg mb-12">
@@ -433,8 +437,8 @@ export default function Home() {
       </section>
 
       {/* FEATURES/TESTIMONIALS SECTION */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-24">
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 font-mono">
+      <section id="features" aria-labelledby="features-heading" className="max-w-7xl mx-auto px-6 py-24">
+        <h2 id="features-heading" className="text-4xl md:text-6xl font-bold text-center mb-16 font-mono">
           Trusted by <span className="text-purple-500">Innovators</span>
         </h2>
 
@@ -475,9 +479,9 @@ export default function Home() {
       </section>
 
       {/* PRICING SECTION */}
-      <section id="pricing" className="max-w-7xl mx-auto px-6 py-24">
+      <section id="pricing" aria-labelledby="pricing-heading" className="max-w-7xl mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 font-mono">Transparent <span className="text-cyan-400">Pricing</span></h2>
+          <h2 id="pricing-heading" className="text-4xl md:text-6xl font-bold mb-6 font-mono">Transparent <span className="text-cyan-400">Pricing</span></h2>
           <p className="text-gray-400 text-lg">Scale your automation as you grow.</p>
         </div>
 
@@ -520,20 +524,23 @@ export default function Home() {
       </section>
 
       {/* FAQ SECTION */}
-      <section id="faq" className="max-w-3xl mx-auto px-6 py-24">
-        <h2 className="text-4xl font-bold text-center mb-16 font-mono">FAQ</h2>
+      <section id="faq" aria-labelledby="faq-heading" className="max-w-3xl mx-auto px-6 py-24">
+        <h2 id="faq-heading" className="text-4xl font-bold text-center mb-16 font-mono">FAQ</h2>
         <div className="space-y-4">
           {faqs.map((faq, i) => (
             <div key={i} className="border border-gray-800 rounded-2xl overflow-hidden">
               <button 
                 onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                aria-expanded={expandedFaq === i}
+                aria-controls={`faq-answer-${i}`}
+                id={`faq-question-${i}`}
                 className="w-full p-6 flex items-center justify-between bg-gray-900/20 hover:bg-gray-900/40 transition-colors"
               >
                 <span className="font-bold text-left">{faq.question}</span>
                 <ChevronDown size={20} className={`transition-transform ${expandedFaq === i ? 'rotate-180' : ''}`} />
               </button>
               {expandedFaq === i && (
-                <div className="p-6 text-gray-400 border-t border-gray-800 bg-black/40">
+                <div id={`faq-answer-${i}`} role="region" aria-labelledby={`faq-question-${i}`} className="p-6 text-gray-400 border-t border-gray-800 bg-black/40">
                   {faq.answer}
                 </div>
               )}
@@ -543,10 +550,10 @@ export default function Home() {
       </section>
 
       {/* CONTACT SECTION */}
-      <section id="contact" className="max-w-7xl mx-auto px-6 py-24">
+      <section id="contact" aria-labelledby="contact-heading" className="max-w-7xl mx-auto px-6 py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           <div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-8 font-mono">Get in <span className="text-purple-500">Touch</span></h2>
+            <h2 id="contact-heading" className="text-4xl md:text-6xl font-bold mb-8 font-mono">Get in <span className="text-purple-500">Touch</span></h2>
             <p className="text-gray-400 text-lg mb-12">
               Ready to transform your workflow? Our team is here to help you build the future of automation.
             </p>
@@ -637,6 +644,8 @@ export default function Home() {
           </form>
         </div>
       </section>
+
+      </main>
 
       {/* FOOTER */}
       <footer className="border-t border-gray-900 py-20 px-6">
