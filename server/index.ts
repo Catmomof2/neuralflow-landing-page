@@ -1,6 +1,7 @@
 import express from "express";
 import helmet from "helmet";
 import { createServer } from "http";
+import rateLimit from "express-rate-limit";
 import path from "path";
 import { fileURLToPath } from "url";
 import process from "node:process";
@@ -11,6 +12,14 @@ const __dirname = path.dirname(__filename);
 async function startServer() {
   const app = express();
   app.use(helmet());
+
+  // Apply rate limiting to all requests
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // max 100 requests per 15 minutes per IP
+    message: "Too many requests from this IP, please try again after 15 minutes",
+  });
+  app.use(limiter);
   const server = createServer(app);
 
   // Serve static files from dist/public in production
