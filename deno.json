@@ -1,0 +1,5 @@
+{
+  "lint": {
+    "exclude": ["client/public/__manus__"]
+  }
+}
