@@ -9,8 +9,15 @@ type UseAuthOptions = {
 };
 
 export function useAuth(options?: UseAuthOptions) {
-  const { redirectOnUnauthenticated = false, redirectPath = getLoginUrl() } =
-    options ?? {};
+  const { redirectOnUnauthenticated = false } = options ?? {};
+  // Resolve the login URL lazily: getLoginUrl() throws when the Manus
+  // OAuth env vars are absent (e.g. the GitHub Pages build, which has no
+  // backend), and it used to run on every call — even when no redirect
+  // was wanted — which crashed pages that only call useAuth() to read the
+  // current user. It is now only evaluated when a redirect is requested.
+  const redirectPath =
+    options?.redirectPath ??
+    (redirectOnUnauthenticated ? getLoginUrl() : undefined);
   const utils = trpc.useUtils();
 
   const meQuery = trpc.auth.me.useQuery(undefined, {
@@ -62,6 +69,7 @@ export function useAuth(options?: UseAuthOptions) {
 
   useEffect(() => {
     if (!redirectOnUnauthenticated) return;
+    if (!redirectPath) return;
     if (meQuery.isLoading || logoutMutation.isPending) return;
     if (state.user) return;
     if (typeof window === "undefined") return;
