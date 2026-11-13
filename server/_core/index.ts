@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import helmet from "helmet";
 import { createServer } from "http";
 import rateLimit from "express-rate-limit";
 import net from "net";
@@ -31,6 +32,7 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 
 async function startServer() {
   const app = express();
+  app.use(helmet());
 
   // Apply rate limiting to all requests
   const limiter = rateLimit({
