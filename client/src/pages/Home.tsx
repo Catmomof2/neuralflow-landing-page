@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Code, Link2, Zap, Activity, Users, Shield, Github, Twitter, Linkedin, Menu, X, Check, ChevronLeft, ChevronRight, Play, ChevronDown, Mail, ArrowRight, Calendar, User, Send, Building2, MessageSquare } from 'lucide-react'
 import { useAuth } from '../_core/hooks/useAuth.ts'
 import { trpc } from '../lib/trpc.ts'
+import { useLocation } from 'wouter'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog.tsx'
 
 /**
@@ -14,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
  */
 export default function Home() {
   let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const [, navigate] = useLocation();
 
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -252,7 +254,7 @@ export default function Home() {
             <li 
               key={link} 
               className="hover:text-cyan-400 transition-colors cursor-pointer duration-300"
-              onClick={() => scrollToSection(link.toLowerCase())}
+              onClick={link === 'Features' ? () => navigate('/features') : () => scrollToSection(link.toLowerCase())}
             >
               {link}
             </li>
@@ -290,7 +292,7 @@ export default function Home() {
               <div 
                 key={link} 
                 className="text-sm font-medium text-gray-400 hover:text-cyan-400 cursor-pointer transition-colors"
-                onClick={() => scrollToSection(link.toLowerCase())}
+                onClick={link === 'Features' ? () => { navigate('/features'); setMobileMenuOpen(false); } : () => scrollToSection(link.toLowerCase())}
               >
                 {link}
               </div>
@@ -665,7 +667,7 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-6">Product</h4>
               <ul className="space-y-4 text-gray-500 text-sm">
-                <li className="hover:text-cyan-400 cursor-pointer transition-colors">Features</li>
+                <li className="hover:text-cyan-400 cursor-pointer transition-colors" onClick={() => navigate('/features')}>Features</li>
                 <li className="hover:text-cyan-400 cursor-pointer transition-colors">Integrations</li>
                 <li className="hover:text-cyan-400 cursor-pointer transition-colors">Pricing</li>
                 <li className="hover:text-cyan-400 cursor-pointer transition-colors">Changelog</li>

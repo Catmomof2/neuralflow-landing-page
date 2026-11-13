@@ -5,6 +5,7 @@ import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import { ThemeProvider } from "./contexts/ThemeContext.tsx";
 import Home from "./pages/Home.tsx";
+import Features from "./pages/Features.tsx";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -15,6 +16,7 @@ function Router() {
     <WouterRouter base={import.meta.env.BASE_URL}>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/features" component={Features} />
         <Route path="/404" component={NotFound} />
         {/* Final fallback route */}
         <Route component={NotFound} />
