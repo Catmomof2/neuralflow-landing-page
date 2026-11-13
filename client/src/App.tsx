@@ -1,7 +1,7 @@
 import { Toaster } from "./components/ui/sonner.tsx";
 import { TooltipProvider } from "./components/ui/tooltip.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import { Route, Switch } from "wouter";
+import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import { ThemeProvider } from "./contexts/ThemeContext.tsx";
 import Home from "./pages/Home.tsx";
@@ -9,12 +9,17 @@ import Home from "./pages/Home.tsx";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/404" component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    // `base` is the Vite base path: "/" when served by the Express server
+    // or in dev, "/neuralflow-landing-page/" on GitHub Pages. Wouter
+    // ignores a base of "/", so this is a no-op outside Pages.
+    <WouterRouter base={import.meta.env.BASE_URL}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/404" component={NotFound} />
+        {/* Final fallback route */}
+        <Route component={NotFound} />
+      </Switch>
+    </WouterRouter>
   );
 }
 

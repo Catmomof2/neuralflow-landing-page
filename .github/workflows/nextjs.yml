@@ -1,0 +1,88 @@
+# Deploy the static Vite frontend to GitHub Pages.
+#
+# This repo is a full-stack Vite + Express app (pnpm), not a Next.js app,
+# so the stock Next.js Pages template does not fit: there is no
+# package-lock.json, no `next build`, and no ./out here. `vite build`
+# outputs the static frontend to dist/public, which is what gets uploaded
+# below. The file keeps its original nextjs.yml name to keep this PR's
+# diff small; only its contents are replaced.
+#
+# Static-only preview: the Express / tRPC / auth backend and database do
+# not run on Pages, so the newsletter + contact forms and sign-in will not
+# work on the Pages URL. The landing page itself renders as static
+# content. For the full app, run the server (`pnpm build && pnpm start`).
+#
+# NOTE: this workflow runs on pushes to main (and manual dispatch), not on
+# pull requests, so its build is first exercised after merge. The build
+# command below was verified locally before this file was committed.
+name: Deploy Vite site to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    # Permissions are scoped to this job (not the whole workflow), as
+    # SonarCloud requires: the build needs to read the repo and to prepare
+    # a Pages deployment.
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        # No version specified here; it will automatically use the one in package.json
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build static frontend
+        # --base matches the project Pages URL
+        # (https://catmomof2.github.io/neuralflow-landing-page/) so that
+        # built asset paths resolve under the repo subpath. The app's
+        # router reads the same base from import.meta.env.BASE_URL.
+        run: pnpm vite build --base=/neuralflow-landing-page/
+      - name: Copy SPA fallback
+        # GitHub Pages serves 404.html for unknown paths, so client-side
+        # routes fall back to the app instead of GitHub's 404 page.
+        run: cp dist/public/index.html dist/public/404.html
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/public
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
