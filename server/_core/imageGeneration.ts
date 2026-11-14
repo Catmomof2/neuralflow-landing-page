@@ -15,7 +15,7 @@
  *     }]
  *   });
  */
-import { storagePut } from "server/storage";
+import { storagePut } from "../storage.ts";
 import { ENV } from "./env.ts";
 import { Buffer } from "node:buffer";
 
