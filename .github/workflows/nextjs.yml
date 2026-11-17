@@ -68,7 +68,7 @@ jobs:
         # routes fall back to the app instead of GitHub's 404 page.
         run: cp dist/public/index.html dist/public/404.html
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist/public
 
